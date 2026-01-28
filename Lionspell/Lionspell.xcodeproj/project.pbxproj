@@ -6,14 +6,47 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		F0AC61F62F23FF6800B89FF3 /* Words.json in Resources */ = {isa = PBXBuildFile; fileRef = F0AC61F52F23FF6800B89FF3 /* Words.json */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		F0AC61C72F22AFF500B89FF3 /* Lionspell.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Lionspell.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F0AC61F52F23FF6800B89FF3 /* Words.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Words.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		F0AC62002F2A85B200B89FF3 /* Exceptions for "Views" folder in "Lionspell" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				ActionButton.swift,
+				CurrentWordview.swift,
+				FoundWordsView.swift,
+				Header.swift,
+				LetterPad.swift,
+				ScoreView.swift,
+			);
+			target = F0AC61C62F22AFF500B89FF3 /* Lionspell */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		F0AC61C92F22AFF500B89FF3 /* Lionspell */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Lionspell;
+			sourceTree = "<group>";
+		};
+		F0AC61F72F27D3DD00B89FF3 /* viewmodel */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = viewmodel;
+			sourceTree = "<group>";
+		};
+		F0AC61FB2F2A858C00B89FF3 /* Views */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				F0AC62002F2A85B200B89FF3 /* Exceptions for "Views" folder in "Lionspell" target */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -32,8 +65,11 @@
 		F0AC61BE2F22AFF500B89FF3 = {
 			isa = PBXGroup;
 			children = (
+				F0AC61FB2F2A858C00B89FF3 /* Views */,
+				F0AC61F72F27D3DD00B89FF3 /* viewmodel */,
 				F0AC61C92F22AFF500B89FF3 /* Lionspell */,
 				F0AC61C82F22AFF500B89FF3 /* Products */,
+				F0AC61F52F23FF6800B89FF3 /* Words.json */,
 			);
 			sourceTree = "<group>";
 		};
@@ -62,6 +98,8 @@
 			);
 			fileSystemSynchronizedGroups = (
 				F0AC61C92F22AFF500B89FF3 /* Lionspell */,
+				F0AC61F72F27D3DD00B89FF3 /* viewmodel */,
+				F0AC61FB2F2A858C00B89FF3 /* Views */,
 			);
 			name = Lionspell;
 			packageProductDependencies = (
@@ -109,6 +147,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F0AC61F62F23FF6800B89FF3 /* Words.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
