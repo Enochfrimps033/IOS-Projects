@@ -52,21 +52,29 @@ class GameManager{
     
     func addLetter(_ letter:String){
         currentWord.append(letter.lowercased())
+        // create map/dict
+
     }
     //remove specified index
     func deleteLetter(){
         guard !currentWord.isEmpty else { return }
         currentWord.removeLast()
-        
+        // use pos
         
         
     }
     
+    
     func submitWord(){
         let word=currentWord.lowercased()
-        
+        print("submit:",word)
+        if word.isEmpty{
+            return
+        }
         if scramble.legalWords.contains(word){
+            print("LEGAL WORD")
             if !foundWords.contains(word){
+                print("not already found")
                 foundWords.insert(word)
                 
                 
@@ -109,3 +117,4 @@ class GameManager{
         
     }
 }
+// Test Cases
