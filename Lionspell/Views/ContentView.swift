@@ -45,6 +45,14 @@ struct ContentView: View {
                 FoundWordsView(words:Array(GM.foundWords).sorted())
             
                 CurrentWordView(word:GM.currentWord)
+                
+                Text(GM.message)
+                    .font(.system(size:14,weight:.semibold,design: .rounded))
+                    .foregroundStyle(.white.opacity(0.5))
+                    .frame(maxWidth:.infinity,alignment:.center)
+                    .padding(.top,4)
+            
+                
                 Letterpad(letters:GM.scramble.letters, highlightcenter: GM.scramble.requiredLetter)
             
             HStack(spacing:14){

@@ -6,12 +6,18 @@ struct Letterpad: View {
     let highlightcenter: Int
     
     var body: some View {
-        HStack(spacing: 14) {
-            HStack(spacing: 10) {
-                ForEach(letters.indices, id:\.self){ i in
-                    LetterButton(letter: letters[i],isRequired: i==highlightcenter)
-                    {
-                        GM.addLetter(letters[i])
+        VStack{
+            Text("Tap letters to spell a word")
+                .font(.system(size: 12, weight: .semibold, design: .rounded))
+                .foregroundStyle(Color.white.opacity(0.56))
+            
+            HStack(spacing: 14) {
+                HStack(spacing: 10) {
+                    ForEach(letters.indices, id:\.self){ i in
+                        LetterButton(letter: letters[i],isRequired: i==highlightcenter)
+                        {
+                            GM.addLetter(letters[i])
+                        }
                     }
                 }
             }
@@ -20,13 +26,16 @@ struct Letterpad: View {
         }
     }
     
-    struct LetterButton: View {
-        let letter: String
-        let isRequired: Bool
-        let action: () -> Void
-        
-        var body: some View {
+struct LetterButton: View {
+    let letter: String
+    let isRequired: Bool
+    let action: () -> Void
+    
+    var body: some View {
+       
+            
             Button(action:action){
+                
                 Text(letter)
                     .font(.system(size: 28, weight: .black, design: .rounded))
                     .foregroundStyle(isRequired ? .black : .white)
@@ -41,3 +50,4 @@ struct Letterpad: View {
             }
         }
     }
+

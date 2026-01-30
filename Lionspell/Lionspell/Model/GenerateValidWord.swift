@@ -36,7 +36,12 @@ struct Scramble{
     let legalWords: [String]
     
     init(){
-        let allwords=Words.allWords.englishWords
+        let allwords=Words.allWords.englishWords.map{
+            $0.lowercased()
+              .trimmingCharacters(in: .whitespacesAndNewlines)
+              .replacingOccurrences(of: "\r", with: "")
+        }
+
         
         let fivelw=allwords.filter {word in
             let lower_case=word.lowercased()
@@ -66,10 +71,14 @@ struct Scramble{
         
         let legalWordFset=Set(lettersArray)
         
-        
+        let probe = "linee"
+//        print("ALLWORDS HAS linee:", allwords.contains(probe))
+//        print("ALLWORDS HAS linee lower:", allwords.contains { $0.lowercased() == probe })
+//        print("ALLWORDS HAS linee trimmed:", allwords.contains { $0.lowercased().trimmingCharacters(in: .whitespacesAndNewlines) == probe })
+
         let validwords = allwords.filter{ word in
-            let lower = Array<String>(arrayLiteral: word.lowercased())
-            let chars=Set (lower)
+            let lower = word.lowercased()
+            let chars=Set (lower.map {String($0)})
             
             // keep word only if letters are from allowed letters and has the required ceter
             return chars.isSubset(of: legalWordFset) && chars.contains( lettersArray[requiredIndex])

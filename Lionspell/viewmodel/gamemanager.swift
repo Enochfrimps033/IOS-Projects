@@ -27,7 +27,7 @@ class GameManager{
     
     var Score:Int
     
-    
+    var message: String=""
     
     
     
@@ -66,16 +66,40 @@ class GameManager{
     
     
     func submitWord(){
-        let word=currentWord.lowercased()
-        print("submit:",word)
+        let word=currentWord.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+            print("SUBMIT:", word)
+            print("LETTERS:", scramble.letters)
+            print("REQUIRED INDEX:", scramble.requiredLetter)
+            print("REQUIRED LETTER:", scramble.letters[scramble.requiredLetter])
+            print("LEGALWORDS COUNT:", scramble.legalWords.count)
+            print("IN LEGALWORDS:", scramble.legalWords.contains(word))
+
         if word.isEmpty{
+            message="Type a word first"
             return
         }
-        if scramble.legalWords.contains(word){
-            print("LEGAL WORD")
-            if !foundWords.contains(word){
-                print("not already found")
-                foundWords.insert(word)
+        
+        if !scramble.legalWords.contains(word){
+            message="Not a valid word"
+            return
+        }
+        
+        
+            message=""
+    
+        
+        if foundWords.contains(word){
+            message="Already found"
+            return
+            
+            
+        }
+            
+        
+                  
+                  
+    
+        foundWords.insert(word)
                 
                 
                 let PointsEarned=points(for:word)
@@ -85,36 +109,35 @@ class GameManager{
                 currentWord=""
                 
             }
-        }
-    }
+    
     
     //give pts for certain word
-    private func points(for word:String)->Int{
-        var points = 0
-        if word.count==4{
-            points=1
-        }
-        else {
-            points=word.count
-        }
-        
-        let uniqueLettersPanagram=Set(word)
-        if uniqueLettersPanagram.count==scramble.letters.count{
-            points+=10
-        }
-        
-        
-        return points
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+private func points(for word:String)->Int{
+    var points = 0
+    if word.count==4{
+        points=1
     }
+    else {
+        points=word.count
+    }
+    
+    let uniqueLettersPanagram=Set(word)
+    if uniqueLettersPanagram.count==scramble.letters.count{
+        points+=10
+    }
+    
+    
+    return points
+    
+    
+    
+    
+    
+    
+}
+        
+        
+        
+    
 }
 // Test Cases
