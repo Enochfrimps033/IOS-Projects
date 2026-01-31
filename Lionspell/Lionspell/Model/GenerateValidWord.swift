@@ -35,18 +35,23 @@ struct Scramble{
     
     let legalWords: [String]
     
+    init(letters:[String],requiredLetter: Int,legalWords:[String] ){
+        self.letters=letters
+        self.requiredLetter=requiredLetter
+        self.legalWords=legalWords
+    }
+    
     init(){
-        let allwords=Words.allWords.englishWords.map{
-            $0.lowercased()
-              .trimmingCharacters(in: .whitespacesAndNewlines)
-              .replacingOccurrences(of: "\r", with: "")
-        }
+        
+            let allwords=Words.allWords.englishWords
+           
+        
 
         
         let fivelw=allwords.filter {word in
-            let lower_case=word.lowercased()
-            let unique_char=Set(lower_case)
-            return unique_char.count == 5
+            let LowerCase=word.lowercased()
+           
+            return LowerCase.count == 5 && Set(LowerCase).count==5
         }
         guard let sourceword=fivelw.randomElement() else {
             self.letters=[]
@@ -71,12 +76,12 @@ struct Scramble{
         
         let legalWordFset=Set(lettersArray)
         
-        let probe = "linee"
-//        print("ALLWORDS HAS linee:", allwords.contains(probe))
+//        let probe = "linee"
+////        print("ALLWORDS HAS linee:", allwords.contains(probe))
 //        print("ALLWORDS HAS linee lower:", allwords.contains { $0.lowercased() == probe })
 //        print("ALLWORDS HAS linee trimmed:", allwords.contains { $0.lowercased().trimmingCharacters(in: .whitespacesAndNewlines) == probe })
 
-        let validwords = allwords.filter{ word in
+            let validwords = allwords.filter{ word in
             let lower = word.lowercased()
             let chars=Set (lower.map {String($0)})
             

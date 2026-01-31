@@ -14,7 +14,18 @@ struct ContentView: View {
 //    @State private var currentword: String=""
 //    @State private var scramble=Scramble()// SOT
     
+    
     // prof said group view put in different files
+    var RequiredValidWord: Bool {
+        let required = GM.scramble.letters[GM.scramble.requiredLetter]
+        let word = GM.currentWord.lowercased()
+        return word.count >= 4 && word.contains(required)
+    }
+    
+    var LightOnDelete: Bool {
+        !GM.currentWord.isEmpty
+    }
+
     var body: some View {
         ZStack{
             BackgroundView()
@@ -60,17 +71,26 @@ struct ContentView: View {
                     GM.deleteLetter()
                 }
                 
+                .disabled(!LightOnDelete)
+                .opacity(LightOnDelete ? 1.0 : 0.3)
+                
+                
+                
                 ActionButton(title:"Submit",systemImage:"checkmark.circle",style:.primary){
                     GM.submitWord()
                     
                 }
+
+                .disabled(!RequiredValidWord)
+                .opacity(RequiredValidWord ? 1.0 : 0.3)
+                
                 
             }
-            
             Spacer(minLength: 10)
             
             HStack(spacing:14){
                 ActionButton(title:"Shuffle",systemImage:"shuffle",style:.neutral){
+                    GM.shuffleLetter()
                     
                 }
                 ActionButton(title:"New Game",systemImage:"arrow.counterclockwise",style:.neutral){

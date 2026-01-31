@@ -66,17 +66,25 @@ class GameManager{
     
     
     func submitWord(){
-        let word=currentWord.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
-            print("SUBMIT:", word)
-            print("LETTERS:", scramble.letters)
-            print("REQUIRED INDEX:", scramble.requiredLetter)
-            print("REQUIRED LETTER:", scramble.letters[scramble.requiredLetter])
-            print("LEGALWORDS COUNT:", scramble.legalWords.count)
-            print("IN LEGALWORDS:", scramble.legalWords.contains(word))
-
+        let word=currentWord
+        //            print("SUBMIT:", word)
+        ////            print("LETTERS:", scramble.letters)
+        ////            print("REQUIRED INDEX:", scramble.requiredLetter)
+        ////            print("REQUIRED LETTER:", scramble.letters[scramble.requiredLetter])
+        ////            print("LEGALWORDS COUNT:", scramble.legalWords.count)
+        ////            print("IN LEGALWORDS:", scramble.legalWords.contains(word))
+        ///
+        let RL=scramble.letters[scramble.requiredLetter]
+        
         if word.isEmpty{
             message="Type a word first"
             return
+        }
+        
+        if !word.contains(RL){
+            message="Missing required letter \(RL.uppercased())"
+            return
+            
         }
         
         if !scramble.legalWords.contains(word){
@@ -84,6 +92,12 @@ class GameManager{
             return
         }
         
+        else{
+            
+            message="valid word"
+            
+            
+        }
         
             message=""
     
@@ -110,7 +124,40 @@ class GameManager{
                 
             }
     
-    
+    func shuffleLetter(){
+        let centerIndex=scramble.letters.count/2
+        let required=scramble.letters[scramble.requiredLetter]
+        
+        var notCenter=scramble.letters.enumerated().filter{ $0.offset != scramble.requiredLetter}.map {$0.element}
+        notCenter.shuffle()
+
+        var NewLetters:[String]=[]
+        NewLetters.append(contentsOf: notCenter.prefix(centerIndex))
+        NewLetters.append(required)
+        NewLetters.append(contentsOf: notCenter.dropFirst(centerIndex))
+        
+
+        var rearranged=scramble.letters
+        rearranged.shuffle()
+        
+        scramble=Scramble(
+            letters:NewLetters,
+            requiredLetter: centerIndex,
+            legalWords: scramble.legalWords
+        )
+    }
+//    
+//    func KeepCenter() {
+//        let required=scramble.letters[scramble.requiredLetter]
+//        
+//        var notCenter=scramble.letters.filter{$0 != required}
+//        
+//        
+//    
+//      
+//            
+//            
+//    }
     //give pts for certain word
 private func points(for word:String)->Int{
     var points = 0
