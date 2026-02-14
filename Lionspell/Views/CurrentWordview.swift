@@ -16,7 +16,6 @@ struct CurrentWordView: View {
         self.minslotCount=minslotCount
     }
     var body: some View {
-        //make more than 5 letter word
         let letters=Array(word.uppercased())
         let slotCount=max(self.minslotCount,letters.count)
         

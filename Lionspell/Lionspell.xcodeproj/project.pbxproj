@@ -47,9 +47,9 @@
 		F0AC61BE2F22AFF500B89FF3 = {
 			isa = PBXGroup;
 			children = (
+				F0AC61C92F22AFF500B89FF3 /* Lionspell */,
 				F0AC61FB2F2A858C00B89FF3 /* Views */,
 				F0AC61F72F27D3DD00B89FF3 /* viewmodel */,
-				F0AC61C92F22AFF500B89FF3 /* Lionspell */,
 				F0AC61C82F22AFF500B89FF3 /* Products */,
 				F0AC61F52F23FF6800B89FF3 /* Words.json */,
 			);

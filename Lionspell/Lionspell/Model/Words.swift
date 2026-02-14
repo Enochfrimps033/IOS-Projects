@@ -9,9 +9,18 @@ import Foundation
 
 struct Words: Codable {
     let englishWords: [String]
+    let italianWords: [String]
+    let germanWords: [String]
+    let frenchWords: [String]
+
     
     enum CodingKeys: String, CodingKey {
         case englishWords
+        case italianWords
+        case germanWords
+        case frenchWords
+
+        
     }
     
     init() {
@@ -23,14 +32,36 @@ struct Words: Codable {
             // Safe fallback (no crash)
             // This shouldn't happen
             self.englishWords = []
+            self.italianWords = []
+            self.germanWords = []
+
+            self.frenchWords = []
+
             return
         }
         
         self.englishWords = decoded.englishWords
+        self.italianWords = decoded.italianWords
+        self.germanWords = decoded.germanWords
+        self.frenchWords = decoded.frenchWords
+
     }
     
-    static let allWords = Words()
     
+    func words (for langauge:LanguageSetting)->[String]{
+        switch langauge{
+        case .english: return englishWords
+        case .italian: return italianWords
+        case .german: return germanWords
+
+        case .french: return frenchWords
+
+
+        }
+    }
+    
+    //reloads once 
+    static let LoadJson = Words()
 }
 
 

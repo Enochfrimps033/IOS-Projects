@@ -19,36 +19,43 @@ import SwiftUI
 @Observable
 
 class GameManager{
-    var scramble: Scramble
+    //if user chnages preference
+    var preferences: Preferences {
+        didSet { startNewGame() }
+    }
+    var _showHints: Bool = false
+
     
+    var scramble:Scramble
     var currentWord:String
-    
     var foundWords: Set<String>
-    
     var Score:Int
-    
     var message: String=""
     
     
     
     init(){
-        self.scramble=Scramble()
-        self.currentWord=""
-        self.foundWords=[]
-        self.Score=0
-        
+        //does this have to be a default value?
+        let initialPreferences = Preferences(language: .english, size: .five)
+
+            self.preferences = initialPreferences
+            self.currentWord = ""
+            self.foundWords = []
+            self.Score = 0
+            self.message = ""
+            self.scramble = Scramble(preferences: initialPreferences)
+
     }
     
     
-    func startNewGame(){
-        scramble=Scramble()
-        currentWord=""
-        foundWords.removeAll()
-        Score=0
-    }
-    
-    
-    
+    func startNewGame() {
+        scramble = Scramble(preferences: preferences)
+            currentWord = ""
+            foundWords.removeAll()
+            Score = 0
+            message = ""
+
+        }
     
     func addLetter(_ letter:String){
         currentWord.append(letter.lowercased())
@@ -159,7 +166,7 @@ class GameManager{
 //            
 //    }
     //give pts for certain word
-private func points(for word:String)->Int{
+internal func points(for word:String)->Int{
     var points = 0
     if word.count==4{
         points=1
@@ -187,4 +194,3 @@ private func points(for word:String)->Int{
         
     
 }
-// Test Cases

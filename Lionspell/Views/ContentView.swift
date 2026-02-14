@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(GameManager.self) private var GM
+    @State private var showPreferences=false
 //    @State private var score: Int=0
 //    @State private var foundwords: [String]=[]
 //    @State private var currentword: String=""
@@ -88,19 +89,26 @@ struct ContentView: View {
             }
             Spacer(minLength: 10)
             
-            HStack(spacing:14){
-                ActionButton(title:"Shuffle",systemImage:"shuffle",style:.neutral){
-                    GM.shuffleLetter()
+                HStack(spacing:14){
+                    ActionButton(title:"Shuffle",systemImage:"shuffle",style:.neutral){
+                        GM.shuffleLetter()
+                        
+                    }
+                    ActionButton(title:"New Game",systemImage:"arrow.counterclockwise",style:.neutral){
+                        GM.startNewGame()
+                    }
+                    ActionButton(title:"Settings ",systemImage:"gearshape",style:.neutral){
+                        showPreferences=true
+                    }
                     
                 }
-                ActionButton(title:"New Game",systemImage:"arrow.counterclockwise",style:.neutral){
-                    GM.startNewGame()
-                }
-            }
-            
         }
         .padding()
         }
+        .sheet(isPresented: $showPreferences){
+            PreferenceView()
+        }
+           
     }
 
 }

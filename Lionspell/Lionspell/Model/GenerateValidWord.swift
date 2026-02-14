@@ -41,28 +41,26 @@ struct Scramble{
         self.legalWords=legalWords
     }
     
-    init(){
+    init(preferences:Preferences){
+        let LanguageType = Words.LoadJson.words(for: preferences.language)
         
-            let allwords=Words.allWords.englishWords
            
-        
+        let WordCount=preferences.size.letterCount
 
         
-        let fivelw=allwords.filter {word in
-            let LowerCase=word.lowercased()
-           
-            return LowerCase.count == 5 && Set(LowerCase).count==5
+        let PlayableWord = LanguageType.filter{PW in
+            PW.count >= 4 && Set(PW).count == WordCount
         }
-        guard let sourceword=fivelw.randomElement() else {
+        
+        
+        guard let sourceword=PlayableWord.randomElement() else {
             self.letters=[]
             self.legalWords=[]
             self.requiredLetter=0
             return
         }
         
-        let lowercased=sourceword.lowercased()
-        
-        let unique_char=Set(lowercased)
+        let unique_char=Set(sourceword)
         
         var lettersArray: [String] = []
         
@@ -76,18 +74,16 @@ struct Scramble{
         
         let legalWordFset=Set(lettersArray)
         
-//        let probe = "linee"
-////        print("ALLWORDS HAS linee:", allwords.contains(probe))
-//        print("ALLWORDS HAS linee lower:", allwords.contains { $0.lowercased() == probe })
-//        print("ALLWORDS HAS linee trimmed:", allwords.contains { $0.lowercased().trimmingCharacters(in: .whitespacesAndNewlines) == probe })
+  
 
-            let validwords = allwords.filter{ word in
-            let lower = word.lowercased()
-            let chars=Set (lower.map {String($0)})
-            
-            // keep word only if letters are from allowed letters and has the required ceter
-            return chars.isSubset(of: legalWordFset) && chars.contains( lettersArray[requiredIndex])
-            
+            let validwords = LanguageType.filter{ word in
+                guard word.count >= 4 else { return false }
+                let lower = word.lowercased()
+                let chars=Set (lower.map {String($0)})
+                
+                // keep word only if letters are from allowed letters and has the required ceter
+                return chars.isSubset(of: legalWordFset) && chars.contains( lettersArray[requiredIndex])
+                
             
         }
         
