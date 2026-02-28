@@ -9,9 +9,13 @@ import SwiftUI
 
 @main
 struct PentominoesApp: App {
+    @State var manager:GameManager=GameManager()
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(manager)
+
         }
     }
 }

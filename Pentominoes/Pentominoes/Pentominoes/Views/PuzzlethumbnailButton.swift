@@ -15,11 +15,9 @@ struct PuzzleThumbnailButton: View {
     var body: some View {
         Button(action: action) {
             ZStack {
-                // background grid-ish look
                 RoundedRectangle(cornerRadius: 6)
                     .stroke(lineWidth: isSelected ? 3 : 1)
 
-                // TEMP: just show puzzle name (replace with real thumbnail drawing next)
                 Text(puzzle.name)
                     .font(.caption2)
                     .multilineTextAlignment(.center)

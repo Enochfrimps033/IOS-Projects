@@ -28,7 +28,6 @@ class GameManager {
     
     init() {
         loadData()
-        print(puzzles.count)
 
         buildPieces()
         setInitialPiecePositions()
@@ -89,5 +88,47 @@ class GameManager {
 
             }
         }
+    
+    func rotatePiece(id: UUID) {
+        guard let idx = pieces.firstIndex(where: { $0.id == id }) else { return }
+        let o = pieces[idx].position.orientation
+
+        let next: Orientation
+        switch o {
+        case .up: next = .right
+        case .right: next = .down
+        case .down: next = .left
+        case .left: next = .up
+        case .upMirrored: next = .rightMirrored
+        case .rightMirrored: next = .downMirrored
+        case .downMirrored: next = .leftMirrored
+        case .leftMirrored: next = .upMirrored
+        }
+
+        pieces[idx].position.orientation = next
+    }
+    func mirrorPiece(id: UUID) {
+        guard let idx = pieces.firstIndex(where: { $0.id == id }) else { return }
+        let o = pieces[idx].position.orientation
+
+        let next: Orientation
+        switch o {
+        case .up: next = .upMirrored
+        case .right: next = .rightMirrored
+        case .down: next = .downMirrored
+        case .left: next = .leftMirrored
+        case .upMirrored: next = .up
+        case .rightMirrored: next = .right
+        case .downMirrored: next = .down
+        case .leftMirrored: next = .left
+        }
+
+        pieces[idx].position.orientation = next
+    }
+    
+    func isOnBoard(_ piece: Piece) -> Bool {
+        (0..<boardSize).contains(piece.position.x) &&
+        (0..<boardSize).contains(piece.position.y)
+    }
     }
 

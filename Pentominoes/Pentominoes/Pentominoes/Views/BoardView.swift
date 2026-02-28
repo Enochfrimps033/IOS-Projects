@@ -4,20 +4,25 @@
 //
 //  Created by Haley Parker on 2/25/26.
 //
-
 import SwiftUI
-
 struct BoardView: View {
     let puzzle: PuzzleOutline
     let boardSize: Int
     let blockSize: CGFloat
     let pieces: [Piece]
-    
+
+    let draggedPieceID: UUID?
+    let dragTranslation: CGSize
+
+    let onDragChanged: (UUID, CGSize, CGPoint) -> Void
+    let onDragEnded: (UUID, CGPoint) -> Void
+
+    let onRotate: (UUID) -> Void
+    let onMirror: (UUID) -> Void
+
     private var side: CGFloat {
         CGFloat(boardSize) * blockSize
-        
     }
-    
     private var puzzleBounds: (minX: Int, maxX: Int, minY: Int, maxY: Int) {
         var minX = Int.max, maxX = Int.min
         var minY = Int.max, maxY = Int.min
@@ -44,89 +49,60 @@ struct BoardView: View {
         let height = b.maxY - b.minY
         return (boardSize - height) / 2 - b.minY
     }
-    private var puzzlePath: Path {
-        
-        Path { path in
-           
-            for outline in puzzle.outlines {
-                guard let first = outline.first else{continue}
-                
-                path.move(to:CGPoint(x:  CGFloat(first.x + puzzleOffsetX) * blockSize, y:   CGFloat(first.y + puzzleOffsetY) * blockSize))
-            
-                
-                for p in outline.dropFirst() {
-                    path.addLine(to: CGPoint(
-                        x: CGFloat(p.x +  puzzleOffsetX ) * blockSize,
-                        y: CGFloat(p.y + puzzleOffsetY) * blockSize
-                    ))
-                }
-                
-                path.closeSubpath()
-            }
-        }
+   
+    private var puzzleShape: PuzzleShape {
+        PuzzleShape(
+            puzzle: puzzle,
+            offsetX: puzzleOffsetX,
+            offsetY: puzzleOffsetY,
+            blockSize: blockSize
+        )
     }
     
-    private func piecePath(for piece: Piece) -> Path {
-        Path{ path in
-            let point = piece.outline.outline
-            guard let first = point.first else{return}
-            
-            
-            let positionX = piece.position.x
-            let positionY = piece.position.y
-            let horizontalOffset: CGFloat = -200
-            path.move(to: CGPoint(
-                x: CGFloat(first.x + positionX ) * blockSize + horizontalOffset ,
-                y: CGFloat( first.y + positionY ) * blockSize
-                ))
-            for p in point.dropFirst(){
-                path.addLine(to: CGPoint(
-                    x: CGFloat(p.x + positionX) * blockSize + horizontalOffset, 
-                    y: CGFloat(p.y + positionY ) * blockSize
-                    ))
-
-            }
-            path.closeSubpath()
-
-    }
-    
-    }
-    
-    var body: some View{
-        ZStack{
+    var body: some View {
+        ZStack {
             RoundedRectangle(cornerRadius: 12)
                 .stroke()
-            Path{ path in
-                for i in 0...boardSize{
-                    let x = CGFloat(i) * blockSize
-                    let y = CGFloat(i) * blockSize
-                    path.move(to: CGPoint(x: x, y: 0))
-                    path.addLine(to: CGPoint(x: x, y: side))
-                    path.move(to: CGPoint(x: 0, y: y))
-                    path.addLine(to: CGPoint(x: side, y: y))
-                    
-                    
-                    
+
+            GridShape(boardSize: boardSize, blockSize: blockSize)
+                .stroke(lineWidth: 1)
+
+            puzzleShape
+                .fill(.gray.opacity(0.35), style: FillStyle(eoFill: true))
+
+            puzzleShape
+                .stroke(.red, lineWidth: 3)
+
+            ForEach(pieces) { piece in
+                ZStack {
+                    PieceView(
+                        piece: piece,
+                        blockSize: blockSize,
+                        boardSize: boardSize,
+                        isDragging: false,
+                        extraX: -200
+                    ).onTapGesture {
+                        onRotate(piece.id)
+                    }
+                    .onLongPressGesture(minimumDuration: 0.4) {
+                        onMirror(piece.id)
+                    }
+                    .scaleEffect(piece.id == draggedPieceID ? 1.2 : 1.0)
+                    .animation(.easeInOut(duration: 0.12), value: piece.id == draggedPieceID)
                 }
-                
+                .offset(piece.id == draggedPieceID ? dragTranslation : .zero)
+                .gesture(
+                    DragGesture(minimumDistance: 0)
+                        .onChanged { value in
+                            onDragChanged(piece.id, value.translation, value.startLocation)
+                        }
+                        .onEnded { value in
+                            onDragEnded(piece.id, value.location)
+                        }
+                )
             }
-            
-            
-            .stroke(lineWidth: 1)
-            puzzlePath.fill(.gray.opacity(0.35))
-            puzzlePath.stroke(.red, lineWidth: 3)
-            ForEach(pieces) {piece in
-                piecePath(for: piece)
-                    .stroke(lineWidth: 2)
-                
-            }
-//            ForEach(pieces.filter { $0.position.y < boardSize }) { piece in
-//                piecePath(for: piece).stroke(lineWidth: 2)
-//            }
         }
-        
-       
-            .frame(width: side, height:side)
-        }
+        .frame(width: side, height: side)
+    }
     }
 
