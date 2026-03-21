@@ -113,7 +113,7 @@ class BuildingViewModel {
 
     func startDirection(for building: Building, transport: TransportType, userLoc: CLLocationCoordinate2D) {
         let end = building.coordinate
-
+        // what  do these warnings mean?
         let startPlacemark = MKPlacemark(coordinate: userLoc)
         let endPlacemark = MKPlacemark(coordinate: end)
 

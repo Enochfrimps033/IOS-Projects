@@ -13,7 +13,6 @@ struct BuildingListView: View {
     var body: some View {
         NavigationStack {
             VStack {
-
                 Picker("Filter", selection: $viewModel.filter) {
                     Text("All").tag(BuildingViewModel.FilterType.all)
                     Text("Selected").tag(BuildingViewModel.FilterType.selected)
@@ -25,7 +24,6 @@ struct BuildingListView: View {
                 List {
                     ForEach(viewModel.filteredBuildings) { building in
                         HStack {
-
                             ZStack {
                                 RoundedRectangle(cornerRadius: 8)
                                     .fill(building.isFavorite ? Color.yellow.opacity(0.3) : Color.gray.opacity(0.2))
@@ -45,6 +43,7 @@ struct BuildingListView: View {
                                 Image(systemName: building.isFavorite ? "star.fill" : "star")
                                     .foregroundStyle(building.isFavorite ? .yellow : .gray)
                             }
+                            .buttonStyle(.plain)
 
                             Button {
                                 viewModel.toggleSelected(for: building)
@@ -52,6 +51,7 @@ struct BuildingListView: View {
                                 Image(systemName: building.isSelected ? "map.fill" : "map")
                                     .foregroundStyle(building.isSelected ? .blue : .gray)
                             }
+                            .buttonStyle(.plain)
                         }
                         .padding(.vertical, 6)
                     }
