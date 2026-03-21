@@ -13,47 +13,56 @@ struct BuildingListView: View {
     var body: some View {
         NavigationStack {
             VStack {
+
                 Picker("Filter", selection: $viewModel.filter) {
                     Text("All").tag(BuildingViewModel.FilterType.all)
                     Text("Selected").tag(BuildingViewModel.FilterType.selected)
-                    Text("Favorites").tag(BuildingViewModel.FilterType.favorites)
+                    Text("Favorited").tag(BuildingViewModel.FilterType.favorites)
                 }
                 .pickerStyle(.segmented)
-                .padding(.horizontal)
+                .padding()
 
                 List {
-                    ForEach(viewModel.filteredBuildings, id: \.id) { building in
+                    ForEach(viewModel.filteredBuildings) { building in
                         HStack {
-                            VStack(alignment: .leading) {
-                                Text(building.name)
-                                    .font(.headline)
 
-                                Text(building.code)
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(building.isFavorite ? Color.yellow.opacity(0.3) : Color.gray.opacity(0.2))
+                                    .frame(width: 40, height: 40)
+
+                                Image(systemName: "building.2")
                             }
+
+                            Text(building.name)
+                                .font(.headline)
 
                             Spacer()
-
-                            Button {
-                                viewModel.toggleSelected(for: building)
-                            } label: {
-                                Image(systemName: building.isSelected ? "checkmark.circle.fill" : "circle")
-                            }
-                            .buttonStyle(.plain)
 
                             Button {
                                 viewModel.toggleFavorite(for: building)
                             } label: {
                                 Image(systemName: building.isFavorite ? "star.fill" : "star")
+                                    .foregroundStyle(building.isFavorite ? .yellow : .gray)
                             }
-                            .buttonStyle(.plain)
+
+                            Button {
+                                viewModel.toggleSelected(for: building)
+                            } label: {
+                                Image(systemName: building.isSelected ? "map.fill" : "map")
+                                    .foregroundStyle(building.isSelected ? .blue : .gray)
+                            }
                         }
+                        .padding(.vertical, 6)
                     }
                 }
+                .listStyle(.plain)
+
+                TextField("Search buildings", text: $viewModel.searchText)
+                    .textFieldStyle(.roundedBorder)
+                    .padding()
             }
             .navigationTitle("Buildings")
-            .searchable(text: $viewModel.searchText, prompt: "Search buildings")
         }
     }
 }
