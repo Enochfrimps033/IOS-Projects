@@ -28,6 +28,6 @@ struct BottomTabView: View {
 }
 
 #Preview {
-    BottomTabView()
+    BottomTabView().environment(AuthManager())
         
 }

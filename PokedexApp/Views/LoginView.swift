@@ -19,11 +19,12 @@ struct LoginView: View {
                 Text("Pokédex Login")
                     .font(.largeTitle)
                     .bold()
-
+                
                 TextField("Email", text: $email)
                     .textFieldStyle(.roundedBorder)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
+                    .keyboardType(.emailAddress)
 
                 SecureField("Password", text: $password)
                     .textFieldStyle(.roundedBorder)
@@ -34,7 +35,7 @@ struct LoginView: View {
                         do{
                             let networkManager = NetworkManager()
                             let tokenResponse = try await networkManager.login(email: email, password: password)
-                            authManager.login(token: tokenResponse.accessToken, email: email)
+                            authManager.login(token: tokenResponse.accessToken, email: tokenResponse.user.email)
                         } catch {
                             print("Error logging in: \(error)")
                         }
