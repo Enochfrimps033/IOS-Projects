@@ -8,24 +8,36 @@
 import SwiftUI
 
 struct ListView: View {
-    let pokemonList: [Pokemon] = [
-        .standard
-    ]
+    @Environment(AuthManager.self) private var authManager
+    @State private var viewModel = PokemonViewModel()
 
     var body: some View {
         NavigationStack {
-            List(pokemonList) { pokemon in
-                NavigationLink {
-                    PokemonDetailView(pokemon: pokemon)
-                } label: {
-                    PokemonRowView(pokemon: pokemon)
+            Group {
+                if viewModel.isLoading {
+                    ProgressView("Loading Pokémon...")
+                } else if let errorMessage = viewModel.errorMessage {
+                    Text(errorMessage)
+                        .foregroundStyle(.red)
+                } else {
+                    List(viewModel.pokemonList) { pokemon in
+                        NavigationLink {
+                            PokemonDetailView(pokemon: pokemon)
+                        } label: {
+                            PokemonRowView(pokemon: pokemon)
+                        }
+                    }
                 }
             }
             .navigationTitle("Pokédex")
+            .task {
+                await viewModel.fetchPokemon(authManager: authManager)
+            }
         }
     }
 }
 
 #Preview {
     ListView()
+        .environment(AuthManager())
 }

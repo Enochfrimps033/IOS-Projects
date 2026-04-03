@@ -20,8 +20,7 @@ struct BottomTabView: View {
                     Label("Types", systemImage: "square.grid.2x2")
                 }
 
-            Text("Account View")
-                .tabItem {
+            AccountView().tabItem {
                     Label("Account", systemImage: "person")
                 }
         }

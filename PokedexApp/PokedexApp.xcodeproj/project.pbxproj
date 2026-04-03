@@ -31,6 +31,11 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
+		F0E2BE152F7F74CF00F2BDA2 /* Mangers */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Mangers;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +52,7 @@
 		F0E2BDD52F7E2A0100F2BDA2 = {
 			isa = PBXGroup;
 			children = (
+				F0E2BE152F7F74CF00F2BDA2 /* Mangers */,
 				F0E2BDF22F7E2BC100F2BDA2 /* ViewModel */,
 				F0E2BDED2F7E2B3E00F2BDA2 /* Views */,
 				F0E2BDEC2F7E2B2300F2BDA2 /* Models */,
@@ -83,6 +89,7 @@
 				F0E2BDEC2F7E2B2300F2BDA2 /* Models */,
 				F0E2BDED2F7E2B3E00F2BDA2 /* Views */,
 				F0E2BDF22F7E2BC100F2BDA2 /* ViewModel */,
+				F0E2BE152F7F74CF00F2BDA2 /* Mangers */,
 			);
 			name = PokedexApp;
 			packageProductDependencies = (

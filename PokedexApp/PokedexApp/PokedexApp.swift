@@ -1,5 +1,5 @@
 //
-//  PokedexAppApp.swift
+//  PokedexApp.swift
 //  PokedexApp
 //
 //  Created by Haley Parker on 4/2/26.
@@ -8,10 +8,13 @@
 import SwiftUI
 
 @main
-struct PokedexAppApp: App {
+struct PokedexApp: App {
+    @State private var authManager = AuthManager()
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(authManager)
         }
     }
 }

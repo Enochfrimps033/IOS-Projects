@@ -8,11 +8,18 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(AuthManager.self) private var authManager
+
     var body: some View {
-        ListView()
+        if authManager.isLoggedIn {
+            BottomTabView()
+        } else {
+            LoginView()
+        }
     }
 }
 
 #Preview {
-    BottomTabView()
+    ContentView()
+        .environment(AuthManager())
 }
