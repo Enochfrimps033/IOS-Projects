@@ -4,7 +4,6 @@
 //
 //  Created by Haley Parker on 4/3/26.
 //
-
 import Foundation
 import Observation
 
@@ -22,10 +21,18 @@ class PokemonViewModel {
 
         do {
             pokemonList = try await networkManager.fetchPokemon(token: authManager.token)
+        } catch is CancellationError {
+            
+        } catch let error as URLError where error.code == .cancelled {
+            
         } catch {
             errorMessage = error.localizedDescription
         }
 
         isLoading = false
+    }
+
+    func pokemon(withId id: Int) -> Pokemon? {
+        pokemonList.first { $0.id == id }
     }
 }

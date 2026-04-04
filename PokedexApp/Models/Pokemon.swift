@@ -58,6 +58,8 @@ struct Pokemon : Identifiable, Codable {
         self.weight = weight
         self.weaknesses = weaknesses
         self.captured = captured
+        self.next_evolution = next_evolution
+        self.prev_evolution = prev_evolution
     }
     
     static let standard = Pokemon(id: 001, name: "Bulbasaur", types: [.grass,.poison], height: 0.71, weight: 6.9, weaknesses: [.fire,.ice,.flying,.psychic], next_evolution: nil, prev_evolution: [2,3])

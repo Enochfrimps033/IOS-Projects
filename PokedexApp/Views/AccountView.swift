@@ -7,27 +7,48 @@
 
 import SwiftUI
 
-
 struct AccountView: View {
-    @Environment(AuthManager.self) var authManager
+    @Environment(AuthManager.self) private var authManager
 
     var body: some View {
         NavigationStack {
-            VStack(alignment: .leading, spacing: 20) {
-                Text("Email")
-                    .font(.headline)
+            VStack(alignment: .leading, spacing: 18) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Email")
+                        .font(.headline)
 
-                Text(authManager.userEmail ?? "No email")
-                    .foregroundStyle(.secondary)
+                    HStack {
+                        Text(authManager.userEmail ?? "No email")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
 
-                Button("Log Out") {
-                    authManager.logout()
+                        Spacer()
+                    }
+                    .padding()
+                    .background(Color(.secondarySystemBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
                 }
-                .foregroundStyle(.red)
+
+                Button {
+                    authManager.logout()
+                } label: {
+                    HStack(spacing: 10) {
+                        Image(systemName: "rectangle.portrait.and.arrow.right")
+                        Text("Log Out")
+                        Spacer()
+                    }
+                    .font(.subheadline)
+                    .foregroundStyle(.red)
+                    .padding()
+                    .background(Color(.secondarySystemBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                }
+                .buttonStyle(.plain)
 
                 Spacer()
             }
             .padding()
+            .background(Color(.systemGroupedBackground))
             .navigationTitle("Account")
         }
     }
@@ -36,4 +57,5 @@ struct AccountView: View {
 #Preview {
     AccountView()
         .environment(AuthManager())
+        .environment(PokemonViewModel())
 }

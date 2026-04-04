@@ -11,15 +11,19 @@ struct ContentView: View {
     @Environment(AuthManager.self) private var authManager
 
     var body: some View {
-        if authManager.isLoggedIn {
-            BottomTabView()
-        } else {
-            LoginView()
+        Group {
+            if authManager.isLoggedIn {
+                BottomTabView()
+            } else {
+                LoginView()
+            }
         }
+        .background(Color(.systemGroupedBackground)) 
     }
 }
 
 #Preview {
     ContentView()
         .environment(AuthManager())
+        .environment(PokemonViewModel())
 }

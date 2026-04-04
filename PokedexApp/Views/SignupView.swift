@@ -1,18 +1,19 @@
 //
-//  LoginView.swift
+//  SignupView.swift
 //  PokedexApp
 //
-//  Created by Haley Parker on 4/2/26.
+//  Created by Haley Parker on 4/3/26.
 //
+
 import SwiftUI
 
-struct LoginView: View {
+struct SignupView: View {
     @Environment(AuthManager.self) private var authManager
+    @Environment(\.dismiss) private var dismiss
 
     @State private var email = ""
     @State private var password = ""
     @State private var errorMessage = ""
-    @State private var showSignup = false
 
     var body: some View {
         NavigationStack {
@@ -25,10 +26,10 @@ struct LoginView: View {
                     .frame(width: 90, height: 90)
 
                 VStack(spacing: 8) {
-                    Text("Pokédex")
+                    Text("Create Account")
                         .font(.system(size: 28, weight: .bold))
 
-                    Text("Sign in to continue")
+                    Text("Sign up to continue")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
@@ -57,7 +58,7 @@ struct LoginView: View {
                             let cleanedPassword = password.trimmingCharacters(in: .whitespacesAndNewlines)
 
                             let networkManager = NetworkManager()
-                            let tokenResponse = try await networkManager.login(
+                            let tokenResponse = try await networkManager.signup(
                                 email: cleanedEmail,
                                 password: cleanedPassword
                             )
@@ -67,17 +68,17 @@ struct LoginView: View {
                                 email: tokenResponse.user.email
                             )
                         } catch {
-                            errorMessage = "Login failed"
-                            print("Error logging in: \(error)")
+                            errorMessage = "Sign up failed"
+                            print("Error signing up: \(error)")
                         }
                     }
                 } label: {
-                    Text("Log In")
+                    Text("Sign Up")
                         .font(.headline)
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color.gray.opacity(0.5))
+                        .background(Color.blue)
                         .clipShape(RoundedRectangle(cornerRadius: 14))
                 }
 
@@ -87,14 +88,8 @@ struct LoginView: View {
                         .font(.caption)
                 }
 
-                HStack(spacing: 4) {
-                    Text("Don't have an account?")
-                        .foregroundStyle(.secondary)
-
-                    Button("Sign Up") {
-                        showSignup = true
-                    }
-                    .fontWeight(.semibold)
+                Button("Already have an account? Log In") {
+                    dismiss()
                 }
                 .font(.footnote)
 
@@ -102,17 +97,13 @@ struct LoginView: View {
             }
             .padding(.horizontal, 28)
             .background(Color(.systemGroupedBackground))
-            .navigationBarHidden(true)
-        }
-        .sheet(isPresented: $showSignup) {
-            SignupView()
-                .environment(authManager)
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }
 
 #Preview {
-    LoginView()
+    SignupView()
         .environment(AuthManager())
         .environment(PokemonViewModel())
 }
