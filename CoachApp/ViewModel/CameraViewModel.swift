@@ -11,6 +11,12 @@ import Observation
 import SwiftUI
 import Vision
 
+enum Exercise{
+    case squat
+    case deadlift
+    case bench
+}
+
 @Observable
 final class CameraViewModel {
     let session = AVCaptureSession()
@@ -24,6 +30,10 @@ final class CameraViewModel {
     
     
     let analyzer = MovementAnalyzer()
+    
+   
+    
+    var selectedExercise : Exercise = .squat
     
     let squatCounter = RepCounter(
         topThreshold: 160,
@@ -106,22 +116,25 @@ final class CameraViewModel {
                     // Hips
                     if let angle = self.analyzer.hipAngle(side: .left, from: points) {
                         print(" L hip: \(Int(angle))°")
-                        
-                        //squat counter
-                        if let leftKnee = self.analyzer.kneeAngle(side: .left, from: points),
-                           let rightKnee = self.analyzer.kneeAngle(side: .right, from: points){
-                            let kneeAvg = (leftKnee + rightKnee) / 2
-                            self.squatCounter.update(angle: kneeAvg)
+                        switch self.selectedExercise {
+                        case .squat:
+                            //squat counter
+                            
+                            if let leftKnee = self.analyzer.kneeAngle(side: .left, from: points),
+                               let rightKnee = self.analyzer.kneeAngle(side: .right, from: points){
+                                let kneeAvg = (leftKnee + rightKnee) / 2
+                                self.squatCounter.update(angle: kneeAvg)
+                            }
+                        case .deadlift:
+                            //deadlift counter
+                            if let leftHip = self.analyzer.hipAngle(side: .left, from: points),
+                               let rightHip = self.analyzer.hipAngle(side: .right, from: points) {
+                                let avgHip = (leftHip + rightHip) / 2
+                                self.deadliftCounter.update(angle: avgHip)
+                            }
+                        case .bench:
+                            break
                         }
-                        
-                        
-                        //deadlift counter
-                        if let leftHip = self.analyzer.hipAngle(side: .left, from: points),
-                        let rightHip = self.analyzer.hipAngle(side: .right, from: points) {
-                        let avgHip = (leftHip + rightHip) / 2
-                        self.deadliftCounter.update(angle: avgHip)
-                               }
-                        
                         
                     }
                 }

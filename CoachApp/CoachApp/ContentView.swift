@@ -19,6 +19,19 @@ struct ContentView: View {
             
             
             VStack {
+                
+                Picker(" Select Exercise", selection: $cameraVM.selectedExercise){
+                    Text("Squat").tag(Exercise.squat)
+                    Text("Deadlift").tag(Exercise.bench)
+                    Text("Bench Press").tag(Exercise.bench)
+                    
+                }
+                
+                .pickerStyle(.segmented)
+                .padding()
+                
+            
+
                 Spacer()
                 
                 VStack(spacing: 4) {
