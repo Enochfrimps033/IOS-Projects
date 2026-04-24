@@ -21,6 +21,25 @@ final class CameraViewModel {
     
     var detectedPoints: [VNHumanBodyPoseObservation.JointName: CGPoint] = [:]
     
+    
+    
+    let analyzer = MovementAnalyzer()
+    
+    let squatCounter = RepCounter(
+        topThreshold: 160,
+        descendingThreshold: 140,
+        bottomThreshold: 100,
+        ascendingThreshold: 110
+        
+    )
+    
+    let deadliftCounter = RepCounter(
+        topThreshold: 160,
+        descendingThreshold: 140,
+        bottomThreshold: 100,
+        ascendingThreshold: 110
+        
+    )
     func checkPermission(){
         let status = AVCaptureDevice.authorizationStatus(for: .video)
         
@@ -63,9 +82,52 @@ final class CameraViewModel {
             self.poseEstimator.onPointsDetected = { points in
                 DispatchQueue.main.async {
                     self.detectedPoints = points
+                    // Elbows
+                    if let angle = self.analyzer.elbowAngle(side: .left, from: points) {
+                        print(" L elbow: \(Int(angle))°")
+                    }
+                    if let angle = self.analyzer.elbowAngle(side: .right, from: points) {
+                        print(" R elbow: \(Int(angle))°")
+                    }
+                    
+                    // Knees
+                    if let angle = self.analyzer.kneeAngle(side: .left, from: points) {
+                        print(" L knee: \(Int(angle))°")
+                    }
+                    if let angle = self.analyzer.kneeAngle(side: .right, from: points) {
+                        print(" R knee: \(Int(angle))°")
+                    }
+                    
+                    // Shoulders
+                    if let angle = self.analyzer.shoulderAngle(side: .left, from: points) {
+                        print(" L shoulder: \(Int(angle))°")
+                    }
+                    
+                    // Hips
+                    if let angle = self.analyzer.hipAngle(side: .left, from: points) {
+                        print(" L hip: \(Int(angle))°")
+                        
+                        //squat counter
+                        if let leftKnee = self.analyzer.kneeAngle(side: .left, from: points),
+                           let rightKnee = self.analyzer.kneeAngle(side: .right, from: points){
+                            let kneeAvg = (leftKnee + rightKnee) / 2
+                            self.squatCounter.update(angle: kneeAvg)
+                        }
+                        
+                        
+                        //deadlift counter
+                        if let leftHip = self.analyzer.hipAngle(side: .left, from: points),
+                        let rightHip = self.analyzer.hipAngle(side: .right, from: points) {
+                        let avgHip = (leftHip + rightHip) / 2
+                        self.deadliftCounter.update(angle: avgHip)
+                               }
+                        
+                        
+                    }
                 }
+                
             }
-
+            
             self.session.beginConfiguration()
 
             let output = AVCaptureVideoDataOutput()

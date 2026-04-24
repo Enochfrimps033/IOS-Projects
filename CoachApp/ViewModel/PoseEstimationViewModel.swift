@@ -24,63 +24,56 @@ final class PoseEstimationViewModel: NSObject, AVCaptureVideoDataOutputSampleBuf
     var smoothedPoints:  [VNHumanBodyPoseObservation.JointName: CGPoint] = [:]
     
     
-    let smoothingStrength: CGFloat = 0.5
-    let maxJumpDistance: CGFloat = 0.25
-    let minConfidence: Float = 0.4
     
-    private func processPoints (
+    let minConfidence: Float = 0.3
+    
+    private func processPoints(
+        _ rawPoints: [VNHumanBodyPoseObservation.JointName: VNRecognizedPoint]
+    ) -> [VNHumanBodyPoseObservation.JointName: CGPoint] {
         
-        _ rawPoints:[VNHumanBodyPoseObservation.JointName: VNRecognizedPoint]) -> [VNHumanBodyPoseObservation.JointName: CGPoint]{
-            // if i disappear from framm old point could still be lingering
-            currentPoints.removeAll()
+        // if i disappear from frame old points could still be lingering
+        currentPoints.removeAll()
         
-            for (joint, recognizedPoint) in rawPoints{
-                guard recognizedPoint.confidence > minConfidence else {continue}
+        for (joint, recognizedPoint) in rawPoints {
+            guard recognizedPoint.confidence > minConfidence else { continue }
+            
+            let newPoint = recognizedPoint.location
+            
+            if let previous = smoothedPoints[joint] {
+                let dx = newPoint.x - previous.x
+                let dy = newPoint.y - previous.y
+                // pyth thrm because it calculates the distance moved between 2 pts
+                // it works for diagonal, vertical, or horizontal change
+                let distance = sqrt(dx * dx + dy * dy)
                 
-                let newPoint = recognizedPoint.location
-                //smoothed point less noiser than prevoius
-                
-                if let previous = smoothedPoints[joint]{
-                    let dx = newPoint.x - previous.x
-                    let dy = newPoint.y - previous.y
-                    // pyth thrm because is will caluate the distance moved 2 pts
-                    // it will work for diagonal, verterical, or horizontal change
-                    let distance = sqrt(dx * dx + dy * dy)
-                    //joint jumps to far in a frame skip reading(aka filter)
-                    if distance > maxJumpDistance{
-                        //smoothed stable point from las frame
-                        currentPoints[joint] = previous
-                        continue
-                    }
-                    
+                // Adaptive smoothing — different strength based on how far the joint moved
+                let smoothingStrength: CGFloat
+                if distance < 0.005 {
+                    smoothingStrength = 0.7  // tiny jitter → smooth heavily
+                } else if distance < 0.05 {
+                    smoothingStrength = 0.3   // normal movement → balanced
+                } else {
+                    smoothingStrength = 0.1   // big movement → trust new data
                 }
                 
-                currentPoints[joint] = newPoint
+                let smoothedX = previous.x * smoothingStrength + newPoint.x * (1.0 - smoothingStrength)
+                let smoothedY = previous.y * smoothingStrength + newPoint.y * (1.0 - smoothingStrength)
+                
+                smoothedPoints[joint] = CGPoint(x: smoothedX, y: smoothedY)
+            } else {
+                smoothedPoints[joint] = newPoint
             }
             
-            for(joint, currentPoint) in currentPoints{
-                // blends old and new points to reduce jittering(no filtering just avrages points)
-                if let previousPoint = smoothedPoints[joint]{
-                    let smoothedX = previousPoint.x * smoothingStrength + currentPoint.x * (1.0 - smoothingStrength)
-                    let smoothedY = previousPoint.y * smoothingStrength + currentPoint.y * (1.0 - smoothingStrength)
-                    
-                    smoothedPoints[joint] = CGPoint(x: smoothedX, y:smoothedY)
-                    
-                }else {
-                    smoothedPoints[joint] = currentPoint
-
-                }
-            
-            }
-            previousPoints = currentPoints
-            let detectedJoints = Set(currentPoints.keys)
-            smoothedPoints = smoothedPoints.filter { detectedJoints.contains($0.key) }
-
-            return smoothedPoints
-            
+            currentPoints[joint] = newPoint
         }
-    
-
+        //remove smoothed entries for joints not detected in this frame
+        let detectedJointNames = Set(currentPoints.keys)
+        smoothedPoints = smoothedPoints.filter { detectedJointNames.contains($0.key) }
+        
+        return smoothedPoints
+    }
+            
+            
     func captureOutput(
         _ output: AVCaptureOutput,
         didOutput sampleBuffer: CMSampleBuffer,
@@ -98,40 +91,11 @@ final class PoseEstimationViewModel: NSObject, AVCaptureVideoDataOutputSampleBuf
             )
 
             try handler.perform([request])
-
             if let results = request.results, !results.isEmpty {
-                print("Pose detected:", results.count)
 
                 guard let firstDetected = results.first else { return }
 
-//                let joints: [VNHumanBodyPoseObservation.JointName] = [
-//                    //face
-//                    .nose,
-//                    .leftEye,
-//                    .rightEye,
-//                    .leftEar,
-//                    .rightEar,
-//                    //upperbody
-//                        .neck,
-//                        .leftShoulder,
-//                        .rightShoulder,
-//                    .leftElbow,
-//                    .rightElbow,
-//                    .leftWrist,
-//                    .rightWrist,
-//                    
-//                    //lowerbody
-//                    .root,
-//                    .leftHip,
-//                    .rightHip,
-//                    .leftKnee,
-//                    .rightKnee,
-//                    .leftAnkle,
-//                    .rightAnkle,
-//                    
-//                    
-//                  
-//                ]
+//               
 
                 guard let allPoints = try? firstDetected.recognizedPoints(.all) else { return }
 

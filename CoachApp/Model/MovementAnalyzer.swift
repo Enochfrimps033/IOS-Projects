@@ -43,18 +43,74 @@ final class MovementAnalyzer{
     }
     
     
-    func leftElbowAngle(
+    enum Side {
+        case left, right
+    }
+
+    func elbowAngle(
+        side: Side,
         from points: [VNHumanBodyPoseObservation.JointName: CGPoint]
     ) -> CGFloat? {
+        let shoulder = side == .left ? VNHumanBodyPoseObservation.JointName.leftShoulder : .rightShoulder
+        let elbow = side == .left ? VNHumanBodyPoseObservation.JointName.leftElbow : .rightElbow
+        let wrist = side == .left ? VNHumanBodyPoseObservation.JointName.leftWrist : .rightWrist
         
-        guard
-                let shoulder = points[.leftShoulder],
-                let elbow = points[.leftElbow],
-                let wrist = points[.leftWrist]
-            else { return nil }
-            
-            return angle(at: elbow, from: shoulder, to: wrist)
+        guard let s = points[shoulder], let e = points[elbow], let w = points[wrist] else {
+            return nil
+        }
         
-        
+        return angle(at: e, from: s, to: w)
     }
+    
+    
+    func kneeAngle(
+        side: Side,
+        from points: [VNHumanBodyPoseObservation.JointName: CGPoint]
+    ) -> CGFloat? {
+        let hip = side == .left ? VNHumanBodyPoseObservation.JointName.leftHip : .leftHip
+        let knee = side == .left ? VNHumanBodyPoseObservation.JointName.leftKnee : .leftKnee
+        let ankle = side == .left ? VNHumanBodyPoseObservation.JointName.leftAnkle : .leftAnkle
+
+        guard let h = points[hip], let k = points[knee], let a = points[ankle] else {
+            return nil
+        }
+        
+        return angle(at: k, from: h, to: a)
+    }
+    
+    
+    func shoulderAngle(
+        side: Side,
+        from points: [VNHumanBodyPoseObservation.JointName: CGPoint]
+    ) -> CGFloat? {
+        let hip = side == .left ? VNHumanBodyPoseObservation.JointName.leftHip : .rightHip
+        let shoulder = side == .left ? VNHumanBodyPoseObservation.JointName.leftShoulder : .rightShoulder
+        let elbow = side == .left ? VNHumanBodyPoseObservation.JointName.leftElbow : .rightElbow
+        
+        guard let h = points[hip], let s = points[shoulder], let e = points[elbow] else {
+            return nil
+        }
+        
+        return angle(at: s, from: h, to: e)
+    }
+    
+    func hipAngle(
+        side: Side,
+        from points: [VNHumanBodyPoseObservation.JointName: CGPoint]
+    ) -> CGFloat? {
+        let shoulder = side == .left ? VNHumanBodyPoseObservation.JointName.leftShoulder : .rightShoulder
+        let hip = side == .left ? VNHumanBodyPoseObservation.JointName.leftHip : .rightHip
+        let knee = side == .left ? VNHumanBodyPoseObservation.JointName.leftKnee : .rightKnee
+        
+        guard let s = points[shoulder], let h = points[hip], let k = points[knee] else {
+            return nil
+        }
+        
+        return angle(at: h, from: s, to: k)
+    }
+
+   
 }
+
+
+    
