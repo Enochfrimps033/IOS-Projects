@@ -4,28 +4,31 @@
 //
 //  Created by Haley Parker on 4/20/26.
 //
-
 import Foundation
 import Observation
+
 enum RepPhase {
-    case top         // standing upright
-    case descending  // going down
-    case bottom      // at squat depth
-    case ascending   // standing back up
+    case top
+    case descending
+    case bottom
+    case ascending
 }
 
 @Observable
 final class RepCounter {
     
-    // Public — what the UI reads
     var repCount = 0
     var currentPhase: RepPhase = .top
+    var repTempos: [TimeInterval] = []
+    var repDepths: [CGFloat] = []
     
-    // Thresholds for squat (we'll use these for now)
-    private let topThreshold: CGFloat      // standing up
-    private let descendingThreshold: CGFloat // starting to bend
-    private let bottomThreshold: CGFloat    // squat depth
-    private let ascendingThreshold: CGFloat  // leaving bottom
+    private var ascendingStartTime: Date?
+    private var lowestAngleThisRep: CGFloat = 180
+    
+    private let topThreshold: CGFloat
+    private let descendingThreshold: CGFloat
+    private let bottomThreshold: CGFloat
+    private let ascendingThreshold: CGFloat
     
     init(
         topThreshold: CGFloat,
@@ -39,25 +42,34 @@ final class RepCounter {
         self.ascendingThreshold = ascendingThreshold
     }
     
-    // The main function — call this every frame with the current knee angle
     func update(angle: CGFloat) {
         switch currentPhase {
-            
         case .top:
             if angle < descendingThreshold {
                 currentPhase = .descending
                 print(" Descending")
             }
             
+            
+            
         case .descending:
+            // Track the lowest angle seen during descent
+            if angle < lowestAngleThisRep {
+                lowestAngleThisRep = angle
+            }
             if angle <= bottomThreshold {
                 currentPhase = .bottom
                 print(" Bottom reached")
             }
             
         case .bottom:
+            // Continue tracking lowest angle while at bottom
+            if angle < lowestAngleThisRep {
+                lowestAngleThisRep = angle
+            }
             if angle > ascendingThreshold {
                 currentPhase = .ascending
+                ascendingStartTime = Date()
                 print(" Ascending")
             }
             
@@ -65,8 +77,35 @@ final class RepCounter {
             if angle >= topThreshold {
                 currentPhase = .top
                 repCount += 1
-                print("Rep complete! Total: \(repCount)")
+                
+                // Save tempo
+                if let startTime = ascendingStartTime {
+                    let duration = Date().timeIntervalSince(startTime)
+                    repTempos.append(duration)
+                    print("Rep \(repCount) — \(String(format: "%.2f", duration))s, depth \(Int(lowestAngleThisRep))°")
+                }
+                
+                // Save depth
+                repDepths.append(lowestAngleThisRep)
+                
+                // Reset for next rep
+                ascendingStartTime = nil
+                lowestAngleThisRep = 180
             }
+            
+            
         }
+        
+        
+    }
+    // reset clears all state for a fresh workout
+
+    func reset() {
+        repCount = 0
+        currentPhase = .top
+        repTempos.removeAll()
+        repDepths.removeAll()
+        ascendingStartTime = nil
+        lowestAngleThisRep = 180
     }
 }

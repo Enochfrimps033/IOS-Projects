@@ -15,10 +15,37 @@ enum Exercise{
     case squat
     case deadlift
     case bench
+    
+    var displayName: String{
+        switch self {
+        case .squat: return "Squat"
+        case .deadlift: return "Deadlift"
+        case .bench: return "Bench"
+        }
+    }
+    
+    var color: Color {
+        switch self {
+        case .squat: return .blue
+        case .deadlift: return .green
+        case .bench: return .orange
+        }
+    }
+    
+    // convertsa saved exercise name back to Exercise
+    static func from(name: String) -> Exercise? {
+        switch name {
+        case "Squat": return .squat
+        case "Deadlift": return .deadlift
+        case "Bench": return .bench
+        default: return nil
+        }
+    }
 }
-
 @Observable
 final class CameraViewModel {
+    
+    var currentAngle: CGFloat = 0
     let session = AVCaptureSession()
     //creates background view for camera
     let sessionQueue = DispatchQueue(label: "camera.session.queue")
@@ -27,7 +54,7 @@ final class CameraViewModel {
     
     var detectedPoints: [VNHumanBodyPoseObservation.JointName: CGPoint] = [:]
     
-    
+    var isPaused: Bool = false
     
     let analyzer = MovementAnalyzer()
     
@@ -50,6 +77,23 @@ final class CameraViewModel {
         ascendingThreshold: 110
         
     )
+    
+    let benchCounter = RepCounter(
+        topThreshold: 160,
+        descendingThreshold: 140,
+        bottomThreshold: 90,
+        ascendingThreshold: 100
+    )
+    
+    // returns the counter for the currently selected exercise
+    var activeCounter: RepCounter {
+        switch selectedExercise {
+        case .squat: return squatCounter
+        case .deadlift: return deadliftCounter
+        case .bench: return benchCounter
+        }
+    }
+    
     func checkPermission(){
         let status = AVCaptureDevice.authorizationStatus(for: .video)
         
@@ -88,57 +132,60 @@ final class CameraViewModel {
         }
 
         sessionQueue.async {
-
             self.poseEstimator.onPointsDetected = { points in
                 DispatchQueue.main.async {
                     self.detectedPoints = points
                     // Elbows
                     if let angle = self.analyzer.elbowAngle(side: .left, from: points) {
-                        print(" L elbow: \(Int(angle))°")
+            //                        print(" L elbow: \(Int(angle))°")
                     }
                     if let angle = self.analyzer.elbowAngle(side: .right, from: points) {
-                        print(" R elbow: \(Int(angle))°")
+            //                        print(" R elbow: \(Int(angle))°")
                     }
                     
                     // Knees
                     if let angle = self.analyzer.kneeAngle(side: .left, from: points) {
-                        print(" L knee: \(Int(angle))°")
+            //                        print(" L knee: \(Int(angle))°")
                     }
                     if let angle = self.analyzer.kneeAngle(side: .right, from: points) {
-                        print(" R knee: \(Int(angle))°")
+            //                        print(" R knee: \(Int(angle))°")
                     }
                     
                     // Shoulders
                     if let angle = self.analyzer.shoulderAngle(side: .left, from: points) {
-                        print(" L shoulder: \(Int(angle))°")
+            //                        print(" L shoulder: \(Int(angle))°")
                     }
                     
                     // Hips
                     if let angle = self.analyzer.hipAngle(side: .left, from: points) {
-                        print(" L hip: \(Int(angle))°")
-                        switch self.selectedExercise {
-                        case .squat:
-                            //squat counter
-                            
-                            if let leftKnee = self.analyzer.kneeAngle(side: .left, from: points),
-                               let rightKnee = self.analyzer.kneeAngle(side: .right, from: points){
-                                let kneeAvg = (leftKnee + rightKnee) / 2
-                                self.squatCounter.update(angle: kneeAvg)
-                            }
-                        case .deadlift:
-                            //deadlift counter
-                            if let leftHip = self.analyzer.hipAngle(side: .left, from: points),
-                               let rightHip = self.analyzer.hipAngle(side: .right, from: points) {
-                                let avgHip = (leftHip + rightHip) / 2
-                                self.deadliftCounter.update(angle: avgHip)
-                            }
-                        case .bench:
-                            break
+            //
+                    }
+                    
+                    // skip rep counting if paused
+                    if self.isPaused { return }
+                    
+                    // update the active counter based on selected exercise
+                    switch self.selectedExercise {
+                    case .squat:
+                        //squat counter
+                        if let avgKnee = self.analyzer.kneeAngleAvg(from: points){
+                            self.currentAngle = avgKnee
+                            self.squatCounter.update(angle: avgKnee)
                         }
-                        
+                    case .deadlift:
+                        //deadlift counter
+                        if let avgHip = self.analyzer.hipAngleAvg(from: points){
+                            self.currentAngle = avgHip
+                            self.deadliftCounter.update(angle: avgHip)
+                        }
+                    case .bench:
+                        //bench counter
+                        if let avgElbow = self.analyzer.elbowAngleAvg(from: points){
+                            self.currentAngle = avgElbow
+                            self.benchCounter.update(angle: avgElbow)
+                        }
                     }
                 }
-                
             }
             
             self.session.beginConfiguration()
@@ -164,7 +211,7 @@ final class CameraViewModel {
                             connection.videoRotationAngle = 90
                         }
                         if connection.isVideoMirroringSupported{
-                            connection.isVideoMirrored = true 
+                            connection.isVideoMirrored = true
                         }
                     }
                 }

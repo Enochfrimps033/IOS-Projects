@@ -62,14 +62,30 @@ final class MovementAnalyzer{
         return angle(at: e, from: s, to: w)
     }
     
+    func elbowAngleAvg(
+        from points: [VNHumanBodyPoseObservation.JointName: CGPoint]
+    ) -> CGFloat? {
+        let leftAngle = elbowAngle(side: .left, from: points)
+        let rightAngle = elbowAngle(side: .right, from: points)
+        
+        if let l = leftAngle, let r = rightAngle {
+            let avg = (l + r) / 2
+            
+            return avg
+        }
+
+        
+        return leftAngle ?? rightAngle
+    }
+    
     
     func kneeAngle(
         side: Side,
         from points: [VNHumanBodyPoseObservation.JointName: CGPoint]
     ) -> CGFloat? {
-        let hip = side == .left ? VNHumanBodyPoseObservation.JointName.leftHip : .leftHip
-        let knee = side == .left ? VNHumanBodyPoseObservation.JointName.leftKnee : .leftKnee
-        let ankle = side == .left ? VNHumanBodyPoseObservation.JointName.leftAnkle : .leftAnkle
+        let hip = side == .left ? VNHumanBodyPoseObservation.JointName.leftHip : .rightHip
+        let knee = side == .left ? VNHumanBodyPoseObservation.JointName.leftKnee : .rightKnee
+        let ankle = side == .left ? VNHumanBodyPoseObservation.JointName.leftAnkle : .rightAnkle
 
         guard let h = points[hip], let k = points[knee], let a = points[ankle] else {
             return nil
@@ -78,6 +94,54 @@ final class MovementAnalyzer{
         return angle(at: k, from: h, to: a)
     }
     
+    func kneeAngleAvg(
+        from points: [VNHumanBodyPoseObservation.JointName: CGPoint]
+    ) -> CGFloat? {
+        let leftAngle = kneeAngle(side: .left, from: points)
+        let rightAngle = kneeAngle(side: .right, from: points)
+        
+        if let l = leftAngle, let r = rightAngle {
+            let avg = (l + r) / 2
+            
+            return avg
+        }
+
+        
+        return leftAngle ?? rightAngle
+    }
+    
+    
+    func hipAngle(
+        side: Side,
+        from points: [VNHumanBodyPoseObservation.JointName: CGPoint]
+    ) -> CGFloat? {
+        let shoulder = side == .left ? VNHumanBodyPoseObservation.JointName.leftShoulder : .rightShoulder
+        let hip = side == .left ? VNHumanBodyPoseObservation.JointName.leftHip : .rightHip
+        let knee = side == .left ? VNHumanBodyPoseObservation.JointName.leftKnee : .rightKnee
+
+        
+        guard let s = points[shoulder], let h = points[hip], let k = points[knee] else {
+            return nil
+        }
+        
+        return angle(at: h, from: s , to: k)
+    }
+    
+    func hipAngleAvg(
+        from points: [VNHumanBodyPoseObservation.JointName: CGPoint]
+    ) -> CGFloat? {
+        let leftAngle = hipAngle(side: .left, from: points)
+        let rightAngle = hipAngle(side: .right, from: points)
+        
+        if let l = leftAngle, let r = rightAngle {
+            let avg = (l + r) / 2
+            
+            return avg
+        }
+
+        
+        return leftAngle ?? rightAngle
+    }
     
     func shoulderAngle(
         side: Side,
@@ -94,20 +158,22 @@ final class MovementAnalyzer{
         return angle(at: s, from: h, to: e)
     }
     
-    func hipAngle(
-        side: Side,
+    func shoulderAngleAvg(
         from points: [VNHumanBodyPoseObservation.JointName: CGPoint]
     ) -> CGFloat? {
-        let shoulder = side == .left ? VNHumanBodyPoseObservation.JointName.leftShoulder : .rightShoulder
-        let hip = side == .left ? VNHumanBodyPoseObservation.JointName.leftHip : .rightHip
-        let knee = side == .left ? VNHumanBodyPoseObservation.JointName.leftKnee : .rightKnee
+        let leftAngle = shoulderAngle(side: .left, from: points)
+        let rightAngle = shoulderAngle(side: .right, from: points)
         
-        guard let s = points[shoulder], let h = points[hip], let k = points[knee] else {
-            return nil
+        if let l = leftAngle, let r = rightAngle {
+            let avg = (l + r) / 2
+            
+            return avg
         }
+
         
-        return angle(at: h, from: s, to: k)
+        return leftAngle ?? rightAngle
     }
+    
 
    
 }
