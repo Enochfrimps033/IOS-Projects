@@ -2,8 +2,6 @@
 
 Coach is an iOS movement analysis app that uses SwiftUI and Apple's Vision framework to detect body poses, track exercise movement, count reps, measure tempo, and provide real-time coaching feedback.
 
-> **Note:** This project is currently in active development. Screenshots and demo media will be added when I have access to my development machine.
-
 ---
 
 ## Overview
@@ -21,25 +19,21 @@ The app focuses on:
 
 ## Screenshots
 
-<!-- Add screenshots here when you have Mac access -->
-<!-- Step 1: Create a folder called screenshots/ in this repo -->
-<!-- Step 2: Run app in Simulator, press Cmd+S to capture each screen -->
-<!-- Step 3: Replace each line below with your real image -->
+### Rep Counter
 
-Rep Counter
+<img width="278" alt="Rep counter" src="https://github.com/user-attachments/assets/439c8e8a-958a-447f-858c-72c5b3e22b9f" />
 
-<img width="278" height="463" alt="Rep_counter" src="https://github.com/user-attachments/assets/439c8e8a-958a-447f-858c-72c5b3e22b9f" />
-*Rep counter, movement phase label, and real-time coaching feedback during a workout.*
+*Live workout screen showing real-time hip angle tracking, rep counter, and movement state during a deadlift.*
 
-Workout Results
+### Workout Results
 
-<img width="278" height="463"  alt="result" src="https://github.com/user-attachments/assets/824f15a5-4a52-40e3-8890-071a41c11d89" />
+<img width="278" alt="Workout results" src="https://github.com/user-attachments/assets/824f15a5-4a52-40e3-8890-071a41c11d89" />
 
-*Post-workout summary screen showing reps completed, tempo, and Apple Charts visualization.*
+*Post-workout summary showing total reps completed along with average, fastest, and slowest tempo, plus automated coaching notes.*
 
-Workout History
+### Workout History
 
-<img width="278" height="463" alt="history" src="https://github.com/user-attachments/assets/76fdb0f5-6af3-47d3-b295-493581a47262" />
+<img width="278" alt="Workout history" src="https://github.com/user-attachments/assets/76fdb0f5-6af3-47d3-b295-493581a47262" />
 
 *Weekly workout history showing exercise sessions, rep counts, and average tempo tracked across the week.*
 
@@ -79,8 +73,7 @@ A state machine tracks whether the user is in the starting position, lowering ph
 
 Hysteresis thresholds make the rep-counting logic more stable. A movement must pass certain threshold values before the app changes states, reducing false positives.
 
-*Pose detection is powered by Apple's Vision framework.
-See [Apple's Human Body Pose documentation](https://developer.apple.com/documentation/vision/detecting_human_body_poses_in_images) for reference.*
+*Pose detection is powered by Apple's Vision framework. See [Apple's Human Body Pose documentation](https://developer.apple.com/documentation/vision/detecting_human_body_poses_in_images) for reference.*
 
 ---
 
@@ -102,14 +95,6 @@ ViewModels   → Workout state, rep counting, and UI logic
 Models       → Exercise data, rep data, and workout history
 Services     → Pose detection, camera input, and audio feedback
 ```
-
----
-
-## Demo
-
-<!-- Record a short GIF using QuickTime + Gifski when you have Mac access -->
-![Demo](screenshots/demo.gif)
-*Real-time pose detection and rep counting in action.*
 
 ---
 
@@ -135,4 +120,4 @@ I also learned how to structure a larger SwiftUI app using MVVM and how to conne
 - Add HealthKit support
 - Add Apple Watch support
 - Add more detailed charts for weekly progress and tempo trends
-- Add demo video and screenshots
+- Add demo video
