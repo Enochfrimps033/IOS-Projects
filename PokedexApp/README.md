@@ -2,8 +2,6 @@
 
 Pokédex is a SwiftUI iOS app that connects to a RESTful API to fetch and display Pokémon data. The app includes user authentication, asynchronous networking, JSON decoding, searchable Pokémon lists, type-based sections, detail views, and capture/release functionality.
 
-> **Note:** This project was built for CMPSC 475 as a networking-focused iOS assignment. The local FastAPI backend was provided for the assignment, and this project focuses on building the SwiftUI client that communicates with that API.
-
 ---
 
 ## Overview
